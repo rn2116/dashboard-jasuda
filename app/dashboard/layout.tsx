@@ -1,29 +1,30 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/dashboard/app-sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { SiteHeader } from "@/components/site-header"
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
 export default function DashboardLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode
+  children: React.ReactNode
 }) {
-    return (
-        // SidebarProvider otomatis mendeteksi ukuran layar
-        <SidebarProvider>
-            {/* Panggil komponen AppSidebar yang baru kita buat */}
-            <AppSidebar />
-
-            <main className="flex-1 w-full bg-gray-50">
-                <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6 bg-white">
-                    {/* Tombol Hamburger ini akan otomatis muncul di HP dan hilang di Laptop! */}
-                    <SidebarTrigger />
-                    <h1 className="ml-4 font-semibold">Dashboard</h1>
-                </div>
-
-                {/* Area Konten Utama */}
-                <div className="p-4 md:p-8">
-                    {children}
-                </div>
-            </main>
-        </SidebarProvider>
-    )
+  return (
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            {children}
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  )
 }
