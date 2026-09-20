@@ -36,19 +36,19 @@ const data = {
       icon: <SquaresFourIcon />,
     },
     {
-      title: "Mesin 1",
+      title: "Mesin Cup Sealer Manual",
       url: "/dashboard/mesin-1",
       icon: <ThermometerIcon />,
     },
     {
-      title: "Mesin 2",
+      title: "Mesin Cup Sealer Otomatis",
       url: "/dashboard/mesin-2",
       icon: <ThermometerIcon />,
     },
     {
-      title: "Mesin 3",
+      title: "Mesin Conveyor",
       url: "/dashboard/mesin-3",
-      icon: <ThermometerIcon />,
+      icon: <GearIcon />,
     },
   ],
   navSecondary: [

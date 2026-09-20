@@ -18,8 +18,22 @@ import { ArrowRightIcon } from "@phosphor-icons/react"
 function OverviewMachineCard({ machine }: { machine: Machine }) {
   const { latest } = useMachineTelemetry(machine.id)
 
+  if (!latest) {
+    return (
+      <Card className="@container/card animate-pulse">
+        <CardHeader>
+          <div className="h-4 w-1/3 bg-muted rounded"></div>
+          <div className="h-6 w-1/2 bg-muted rounded mt-2"></div>
+        </CardHeader>
+        <CardFooter>
+          <div className="h-10 w-full bg-muted rounded"></div>
+        </CardFooter>
+      </Card>
+    )
+  }
+
   return (
-    <Card className="@container/card">
+    <Card className="@container/card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/50 cursor-pointer">
       <CardHeader>
         <CardDescription>{machine.location}</CardDescription>
         <CardTitle className="text-xl font-semibold @[250px]/card:text-2xl">
@@ -35,14 +49,29 @@ function OverviewMachineCard({ machine }: { machine: Machine }) {
             <div className="font-semibold tabular-nums">{latest.suhu.toFixed(1)}°C</div>
             <div className="text-xs text-muted-foreground">Suhu</div>
           </div>
-          <div>
-            <div className="font-semibold tabular-nums">{latest.tekanan.toFixed(2)}</div>
-            <div className="text-xs text-muted-foreground">Tekanan (bar)</div>
-          </div>
-          <div>
-            <div className="font-semibold tabular-nums">{latest.timer.toFixed(2)}</div>
-            <div className="text-xs text-muted-foreground">Timer (s)</div>
-          </div>
+          {machine.type === "conveyor" ? (
+            <>
+              <div>
+                <div className="font-semibold tabular-nums">{latest.kecepatan?.toFixed(1) || "-"}</div>
+                <div className="text-xs text-muted-foreground">Kecepatan (RPM)</div>
+              </div>
+              <div>
+                <div className="font-semibold tabular-nums">{latest.pouchMasuk || "-"}</div>
+                <div className="text-xs text-muted-foreground">Pouch In</div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <div className="font-semibold tabular-nums">{latest.tekanan?.toFixed(2) || "-"}</div>
+                <div className="text-xs text-muted-foreground">Tekanan (bar)</div>
+              </div>
+              <div>
+                <div className="font-semibold tabular-nums">{latest.timer?.toFixed(2) || "-"}</div>
+                <div className="text-xs text-muted-foreground">Timer (s)</div>
+              </div>
+            </>
+          )}
         </div>
         <Link
           href={`/dashboard/${machine.id}`}

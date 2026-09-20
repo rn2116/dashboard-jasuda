@@ -14,25 +14,34 @@ export interface TelemetryReading {
   timestamp: number
   /** Heater temperature in degrees Celsius (MAX31856 + PT100). */
   suhu: number
-  /** Sealing pressure in bar (load cell + HX711). */
-  tekanan: number
-  /** Seal dwell time for the current/last cycle, in seconds. */
-  timer: number
+  /** Sealing pressure in bar (load cell + HX711). (Cup Sealer only) */
+  tekanan?: number
+  /** Seal dwell time for the current/last cycle, in seconds. (Cup Sealer only) */
+  timer?: number
+  /** Kecepatan atau RPM (Conveyor only) */
+  kecepatan?: number
+  /** Counter pouch masuk (Conveyor only) */
+  pouchMasuk?: number
+  /** Counter pouch keluar (Conveyor only) */
+  pouchKeluar?: number
 }
 
 export interface CycleLogEntry {
   id: number
   timestamp: number
   suhu: number
-  tekanan: number
-  timer: number
+  tekanan?: number
+  timer?: number
+  kecepatan?: number
+  pouchMasuk?: number
+  pouchKeluar?: number
   status: "Selesai"
 }
 
-const BASELINE: Record<MachineId, { suhu: number; tekanan: number; timer: number }> = {
+const BASELINE: Record<MachineId, { suhu: number; tekanan?: number; timer?: number; kecepatan?: number }> = {
   "mesin-1": { suhu: 185, tekanan: 4.2, timer: 3.5 },
   "mesin-2": { suhu: 178, tekanan: 3.8, timer: 4.0 },
-  "mesin-3": { suhu: 192, tekanan: 4.5, timer: 3.2 },
+  "mesin-3": { suhu: 192, kecepatan: 120 },
 }
 
 function seedFromId(machineId: MachineId): number {
@@ -48,12 +57,24 @@ export function generateReading(
   const wobble = Math.sin(timestamp / 4000 + seed)
   const noise = () => (Math.random() - 0.5)
 
-  return {
+  const reading: TelemetryReading = {
     timestamp,
     suhu: Number((base.suhu + wobble * 3 + noise() * 1.5).toFixed(1)),
-    tekanan: Number((base.tekanan + wobble * 0.3 + noise() * 0.15).toFixed(2)),
-    timer: Number((base.timer + wobble * 0.2 + noise() * 0.1).toFixed(2)),
   }
+
+  if (machineId === "mesin-1" || machineId === "mesin-2") {
+    reading.tekanan = Number(((base.tekanan || 0) + wobble * 0.3 + noise() * 0.15).toFixed(2))
+    reading.timer = Number(((base.timer || 0) + wobble * 0.2 + noise() * 0.1).toFixed(2))
+  } else if (machineId === "mesin-3") {
+    reading.kecepatan = Number(((base.kecepatan || 0) + wobble * 5 + noise() * 2).toFixed(1))
+    // Simulate counters increasing over time
+    const elapsedMinutes = (Date.now() - timestamp) / 60000
+    const currentBaseMasuk = 1500 + Math.floor(timestamp / 60000) % 1000
+    reading.pouchMasuk = currentBaseMasuk
+    reading.pouchKeluar = Math.max(0, currentBaseMasuk - Math.floor(Math.random() * 5)) // Some pouches might be rejected/in transit
+  }
+
+  return reading
 }
 
 export function generateCycleLog(

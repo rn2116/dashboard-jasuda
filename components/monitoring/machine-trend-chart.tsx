@@ -19,7 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { TelemetryReading } from "@/lib/monitoring/mock-telemetry"
 
-type ParameterKey = "suhu" | "tekanan" | "timer"
+type ParameterKey = "suhu" | "tekanan" | "timer" | "kecepatan"
 
 const PARAMETERS: Record<
   ParameterKey,
@@ -40,6 +40,11 @@ const PARAMETERS: Record<
     unit: "s",
     config: { timer: { label: "Timer (s)", color: "var(--primary)" } },
   },
+  kecepatan: {
+    label: "Kecepatan",
+    unit: "RPM",
+    config: { kecepatan: { label: "Kecepatan (RPM)", color: "var(--primary)" } },
+  }
 }
 
 export function MachineTrendChart({
@@ -47,8 +52,24 @@ export function MachineTrendChart({
 }: {
   history: TelemetryReading[]
 }) {
+  const availableParameters = React.useMemo(() => {
+    const params: ParameterKey[] = ["suhu"]
+    if (history.some((r) => r.tekanan !== undefined)) params.push("tekanan")
+    if (history.some((r) => r.timer !== undefined)) params.push("timer")
+    if (history.some((r) => r.kecepatan !== undefined)) params.push("kecepatan")
+    return params
+  }, [history])
+
   const [parameter, setParameter] = React.useState<ParameterKey>("suhu")
-  const { label, unit, config } = PARAMETERS[parameter]
+
+  // Ensure selected parameter is available
+  React.useEffect(() => {
+    if (!availableParameters.includes(parameter)) {
+      setParameter(availableParameters[0])
+    }
+  }, [availableParameters, parameter])
+
+  const { label, unit, config } = PARAMETERS[parameter] || PARAMETERS.suhu
 
   return (
     <Card className="@container/card">
@@ -62,9 +83,11 @@ export function MachineTrendChart({
           onValueChange={(value) => setParameter(value as ParameterKey)}
         >
           <TabsList>
-            <TabsTrigger value="suhu">Suhu</TabsTrigger>
-            <TabsTrigger value="tekanan">Tekanan</TabsTrigger>
-            <TabsTrigger value="timer">Timer</TabsTrigger>
+            {availableParameters.map((p) => (
+              <TabsTrigger key={p} value={p}>
+                {PARAMETERS[p].label}
+              </TabsTrigger>
+            ))}
           </TabsList>
           <TabsContent value={parameter}>
             <ChartContainer config={config} className="aspect-auto h-[250px] w-full">

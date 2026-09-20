@@ -15,12 +15,18 @@ const POLL_INTERVAL_MS = 3000
  * decided (see CLAUDE.md).
  */
 export function useMachineTelemetry(machineId: MachineId) {
-  const [history, setHistory] = React.useState<TelemetryReading[]>(() => {
+  const [history, setHistory] = React.useState<TelemetryReading[]>([])
+  const [isMounted, setIsMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setIsMounted(true)
     const now = Date.now()
-    return Array.from({ length: MAX_HISTORY }, (_, i) =>
-      generateReading(machineId, now - (MAX_HISTORY - i) * POLL_INTERVAL_MS)
+    setHistory(
+      Array.from({ length: MAX_HISTORY }, (_, i) =>
+        generateReading(machineId, now - (MAX_HISTORY - i) * POLL_INTERVAL_MS)
+      )
     )
-  })
+  }, [machineId])
 
   React.useEffect(() => {
     const id = setInterval(() => {

@@ -31,6 +31,8 @@ export function MachineCycleTable({ data }: { data: CycleLogEntry[] }) {
                   <TableHead className="text-right">Suhu (°C)</TableHead>
                   <TableHead className="text-right">Tekanan (bar)</TableHead>
                   <TableHead className="text-right">Timer (s)</TableHead>
+                  <TableHead className="text-right">Kecepatan (RPM)</TableHead>
+                  <TableHead className="text-right">Pouch (In/Out)</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -49,10 +51,16 @@ export function MachineCycleTable({ data }: { data: CycleLogEntry[] }) {
                       {entry.suhu.toFixed(1)}
                     </TableCell>
                     <TableCell className="text-right tabular-nums">
-                      {entry.tekanan.toFixed(2)}
+                      {entry.tekanan !== undefined ? entry.tekanan.toFixed(2) : "-"}
                     </TableCell>
                     <TableCell className="text-right tabular-nums">
-                      {entry.timer.toFixed(2)}
+                      {entry.timer !== undefined ? entry.timer.toFixed(2) : "-"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {entry.kecepatan !== undefined ? entry.kecepatan.toFixed(1) : "-"}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {entry.pouchMasuk !== undefined ? entry.pouchMasuk : "-"} / {entry.pouchKeluar !== undefined ? entry.pouchKeluar : "-"}
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="px-1.5 text-muted-foreground">
