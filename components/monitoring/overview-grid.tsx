@@ -11,22 +11,31 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { useMachineTelemetry } from "@/hooks/use-machine-telemetry"
+import { useMachineLatest } from "@/hooks/use-machine-latest"
 import { MACHINES, type Machine } from "@/lib/monitoring/machines"
 import { ArrowRightIcon } from "@phosphor-icons/react"
 
 function OverviewMachineCard({ machine }: { machine: Machine }) {
-  const { latest } = useMachineTelemetry(machine.id)
+  const { latest, isLoading } = useMachineLatest(machine.id)
 
   if (!latest) {
     return (
-      <Card className="@container/card animate-pulse">
+      <Card className="@container/card">
         <CardHeader>
-          <div className="h-4 w-1/3 bg-muted rounded"></div>
-          <div className="h-6 w-1/2 bg-muted rounded mt-2"></div>
+          <CardDescription>{machine.location}</CardDescription>
+          <CardTitle className="text-xl font-semibold @[250px]/card:text-2xl">
+            {machine.name}
+          </CardTitle>
+          <CardAction>
+            <Badge variant="outline" className="text-muted-foreground">
+              {isLoading ? "Memuat…" : "Menunggu data"}
+            </Badge>
+          </CardAction>
         </CardHeader>
-        <CardFooter>
-          <div className="h-10 w-full bg-muted rounded"></div>
+        <CardFooter className="text-sm text-muted-foreground">
+          {isLoading
+            ? "Mengambil pembacaan terakhir…"
+            : "Belum ada pembacaan dari ESP32."}
         </CardFooter>
       </Card>
     )

@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { CheckCircleIcon } from "@phosphor-icons/react"
-import type { CycleLogEntry } from "@/lib/monitoring/mock-telemetry"
+import type { CycleLogEntry } from "@/lib/monitoring/types"
 
 export function MachineCycleTable({ data }: { data: CycleLogEntry[] }) {
   return (
@@ -19,7 +19,7 @@ export function MachineCycleTable({ data }: { data: CycleLogEntry[] }) {
       <Card>
         <CardHeader>
           <CardTitle>Riwayat Siklus</CardTitle>
-          <CardDescription>Catatan siklus sealing terakhir (data simulasi)</CardDescription>
+          <CardDescription>Catatan siklus sealing terakhir (data dari database)</CardDescription>
         </CardHeader>
         <CardContent className="px-0">
           <div className="overflow-hidden rounded-lg border">

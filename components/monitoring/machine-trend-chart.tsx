@@ -17,7 +17,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { TelemetryReading } from "@/lib/monitoring/mock-telemetry"
+import type { TelemetryReading } from "@/lib/monitoring/types"
 
 type ParameterKey = "suhu" | "tekanan" | "timer" | "kecepatan"
 
@@ -62,24 +62,23 @@ export function MachineTrendChart({
 
   const [parameter, setParameter] = React.useState<ParameterKey>("suhu")
 
-  // Ensure selected parameter is available
-  React.useEffect(() => {
-    if (!availableParameters.includes(parameter)) {
-      setParameter(availableParameters[0])
-    }
-  }, [availableParameters, parameter])
+  // Sesuaikan parameter terpilih saat render (bukan di effect) —
+  // data awal bisa kosong / berubah ketika mesin berganti tipe.
+  const activeParameter: ParameterKey = availableParameters.includes(parameter)
+    ? parameter
+    : availableParameters[0]
 
-  const { label, unit, config } = PARAMETERS[parameter] || PARAMETERS.suhu
+  const { label, unit, config } = PARAMETERS[activeParameter] || PARAMETERS.suhu
 
   return (
     <Card className="@container/card">
       <CardHeader>
         <CardTitle>Tren {label}</CardTitle>
-        <CardDescription>Pembacaan langsung (simulasi) beberapa menit terakhir</CardDescription>
+        <CardDescription>Pembacaan langsung beberapa menit terakhir</CardDescription>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
         <Tabs
-          value={parameter}
+          value={activeParameter}
           onValueChange={(value) => setParameter(value as ParameterKey)}
         >
           <TabsList>

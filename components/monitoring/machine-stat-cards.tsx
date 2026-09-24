@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import type { TelemetryReading } from "@/lib/monitoring/mock-telemetry"
+import type { TelemetryReading } from "@/lib/monitoring/types"
 import { ThermometerIcon, GaugeIcon, TimerIcon } from "@phosphor-icons/react"
 
 function formatUpdatedAt(timestamp: number) {

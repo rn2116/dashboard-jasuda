@@ -1,10 +1,8 @@
 "use client"
 
-import * as React from "react"
-
 import { useMachineTelemetry } from "@/hooks/use-machine-telemetry"
+import { useCycleLog } from "@/hooks/use-cycle-log"
 import { getMachine, type MachineId } from "@/lib/monitoring/machines"
-import { generateCycleLog } from "@/lib/monitoring/mock-telemetry"
 import { MachineStatCards } from "./machine-stat-cards"
 import dynamic from "next/dynamic"
 
@@ -26,12 +24,8 @@ import { MachineCycleTable } from "./machine-cycle-table"
 
 export function MachineDashboard({ machineId }: { machineId: MachineId }) {
   const machine = getMachine(machineId)
-  const { latest, history } = useMachineTelemetry(machineId)
-  const [cycles, setCycles] = React.useState<ReturnType<typeof generateCycleLog>>([])
-
-  React.useEffect(() => {
-    setCycles(generateCycleLog(machineId))
-  }, [machineId])
+  const { latest, history, isLoading, error } = useMachineTelemetry(machineId)
+  const { logs: cycles } = useCycleLog(machineId)
 
   return (
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
@@ -39,10 +33,29 @@ export function MachineDashboard({ machineId }: { machineId: MachineId }) {
         <h2 className="text-lg font-semibold">{machine.name}</h2>
         <p className="text-sm text-muted-foreground">{machine.location}</p>
       </div>
-      <MachineStatCards latest={latest} />
+
+      {error && (
+        <div className="px-4 lg:px-6">
+          <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive text-sm">
+            Gagal memuat data: {error}
+          </div>
+        </div>
+      )}
+
+      {!isLoading && !latest && !error && (
+        <div className="px-4 lg:px-6">
+          <div className="rounded-lg border border-border/50 bg-muted/30 p-4 text-sm text-muted-foreground">
+            Belum ada pembacaan dari mesin ini. Pastikan ESP32 sudah mengirim data ke{" "}
+            <code className="rounded bg-muted px-1 py-0.5">POST /api/telemetry</code>.
+          </div>
+        </div>
+      )}
+
+      <MachineStatCards latest={latest ?? undefined} />
       <div className="px-4 lg:px-6">
         <MachineTrendChart history={history} />
       </div>
+
       <MachineCycleTable data={cycles} />
     </div>
   )

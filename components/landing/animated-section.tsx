@@ -4,8 +4,9 @@ import * as React from "react"
 import { motion, useInView } from "framer-motion"
 import { cn } from "@/lib/utils"
 
-interface AnimatedSectionProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AnimatedSectionProps {
   children: React.ReactNode
+  className?: string
   delay?: number
 }
 
@@ -13,7 +14,6 @@ export function AnimatedSection({
   children,
   className,
   delay = 0,
-  ...props
 }: AnimatedSectionProps) {
   const ref = React.useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
@@ -25,7 +25,6 @@ export function AnimatedSection({
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.6, delay, ease: "easeOut" }}
       className={cn(className)}
-      {...props}
     >
       {children}
     </motion.div>

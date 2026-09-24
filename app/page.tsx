@@ -1,5 +1,4 @@
 import Link from "next/link"
-import dynamic from "next/dynamic"
 import { FactoryIcon, ArrowRightIcon, ChartLineUpIcon, CpuIcon, ScrewdriverIcon } from "@phosphor-icons/react/dist/ssr"
 import { AnimatedSection } from "@/components/landing/animated-section"
 import { Button } from "@/components/ui/button"
