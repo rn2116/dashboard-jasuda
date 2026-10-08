@@ -24,11 +24,6 @@ import {
 } from "@phosphor-icons/react"
 
 const data = {
-  user: {
-    name: "Operator",
-    email: "operator@jasuda.local",
-    avatar: "",
-  },
   navMain: [
     {
       title: "Ringkasan",
@@ -86,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )
